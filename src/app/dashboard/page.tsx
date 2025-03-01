@@ -1,12 +1,19 @@
 import { Container } from '@/components/container/index';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { Sidebar } from '@/components/sidebar'
 
-export default function Dashboard(){
+
+export default async function Dashboard(){
+  const session = getServerSession(authOptions);
+
+  console.log(session);
+
   return(
     <Container>
       <div>
-        <h1>
-          Página Dashboard
-        </h1>
+        <Sidebar />
+        
       </div>
     </Container>
   )
