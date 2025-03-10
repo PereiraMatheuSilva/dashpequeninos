@@ -64,7 +64,7 @@ export default function Calendar({ agendamentos }: CalendarProps) {
   return (
     <div className="flex h-[calc(100vh-80px)] px-8">
       {/* Espaço fixo de 64 (16rem) à esquerda */}
-      <div className="w-64"></div>
+      <div className="2xl:w-64"></div>
 
       {/* Calendário ocupando o restante do espaço sem estourar */}
       <div className="flex-1 max-w-[calc(100vw-16rem)] mx-auto text-center">

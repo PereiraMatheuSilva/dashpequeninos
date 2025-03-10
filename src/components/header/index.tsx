@@ -22,7 +22,7 @@ export function Header(){
 
   return(
     <header className='w-full flex items-center px-2 py-4 bg-white h-20 shadow-sm'>
-      <div className='w-full flex items-center justify-between max-w-7xl mx-auto'>
+      <div className='2xl:w-full flex items-center justify-between max-w-7xl mx-auto xl:w-4xl xl:ml-72'>
         <Link href="/">
           <h1 className='font-bold text-2xl pl-1 hover:tracking-widest duration-300'>
             <span className='text-green-800'>CASA</span> <span className='text-yellow-400'>PEQUENINOS</span>

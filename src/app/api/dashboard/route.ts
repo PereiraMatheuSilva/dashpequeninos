@@ -29,6 +29,34 @@ export async function GET(request: Request) {
   }
 }
 
+export async function DELETE(request: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const appointmentId = searchParams.get('id');
+
+  if (!appointmentId) {
+    return NextResponse.json({ error: 'Failed to delete appointment: ID not provided' }, { status: 400 }); // Status 400 para indicar erro do cliente
+  }
+
+  try {
+    await prismaClient.appointment.delete({
+      where: {
+        id: appointmentId as string,
+      },
+    });
+
+    return NextResponse.json({ message: 'Appointment deleted successfully!' });
+  } catch (error) {
+    console.error('Error deleting appointment:', error);
+    return NextResponse.json({ error: 'Failed to delete appointment' }, { status: 500 }); // Status 500 para erro do servidor
+  }
+}
+
 // Função para criar um novo agendamento
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -56,6 +84,29 @@ export async function POST(request: Request) {
     const startDateTime = new Date(`${date}T${startTime}:00`);
     const endDateTime = new Date(`${date}T${endTime}:00`);
 
+    // Verificar se já existe um agendamento para a mesma sala, data e horário
+    const existingAppointment = await prismaClient.appointment.findFirst({
+      where: {
+        room,
+        date: startDateTime, // Verifica a data
+        OR: [
+          {
+            AND: [
+              { startTime: { lte: endDateTime } }, // Início do novo está antes ou no mesmo horário do fim do existente
+              { endTime: { gte: startDateTime } }  // Fim do novo está depois ou no mesmo horário do início do existente
+            ]
+          }
+        ]
+      }
+    });
+
+    if (existingAppointment) {
+      return NextResponse.json(
+        { error: "Já existe um agendamento para essa sala e horário." },
+        { status: 400 }
+      );
+    }
+
     // Criando um novo agendamento no banco de dados
     const appointment = await prismaClient.appointment.create({
       data: {
@@ -72,38 +123,16 @@ export async function POST(request: Request) {
       }
     });
 
-    return NextResponse.json({ message: "Agendamento criado com sucesso!", appointment }, { status: 201 });
+    return NextResponse.json(
+      { message: "Agendamento criado com sucesso!", appointment },
+      { status: 201 }
+    );
 
   } catch (error) {
     console.error("Erro ao criar agendamento:", error);
-    return NextResponse.json({ error: "Failed to create appointment" }, { status: 400 });
-  }
-}
-
-export async function DELETE(request: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user) {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const appointmentId = searchParams.get('id');
-
-  if (!appointmentId) {
-    return NextResponse.json({ error: 'Failed to delete appointment: ID not provided' }, { status: 400 }); // Status 400 para indicar erro do cliente
-  }
-
-  try {
-    await prismaClient.appointment.delete({
-      where: {
-        id: appointmentId as string,
-      },
-    });
-
-    return NextResponse.json({ message: 'Appointment deleted successfully!' });
-  } catch (error) {
-    console.error('Error deleting appointment:', error);
-    return NextResponse.json({ error: 'Failed to delete appointment' }, { status: 500 }); // Status 500 para erro do servidor
+    return NextResponse.json(
+      { error: "Failed to create appointment" },
+      { status: 400 }
+    );
   }
 }

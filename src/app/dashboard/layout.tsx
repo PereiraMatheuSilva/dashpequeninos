@@ -12,7 +12,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <>
       <Sidebar />
       <div
-        className={`w-full flex items-center justify-between mx-auto mt-10 ${
+        className={`w-full xl:w-4xl xl:ml-72 flex items-center justify-between mx-auto mt-10 ${
           isDashboardPage ? "" : "max-w-7xl" // Remove `max-w-7xl` apenas no `/dashboard`
         }`}
       >

@@ -56,14 +56,14 @@ export default async function Clientes() {
           {/* Tabela de clientes */}
           <table className='min-w-full my-2'>
             <thead>
-              <tr>
+              <tr className="text-sm xl:text-base">
                 <th className='font-medium text-left'>Data Cadastro</th>
                 <th className='font-medium text-left'>Cliente</th>
                 <th className='font-medium text-left'>Telefone</th>
                 <th className='font-medium text-left'>Email</th>
                 <th className='font-medium text-left'>Endereço</th>
                 <th className='font-medium text-left'>Responsável</th>
-                <th className='font-medium text-left'>Deletar</th>
+                <th className='font-medium text-left'>Editar</th>
               </tr>
             </thead>
             <tbody>

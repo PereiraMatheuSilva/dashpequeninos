@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prismaClient from '@/lib/prisma';
@@ -64,3 +65,45 @@ export async function DELETE(request: Request) {
 
 }
 
+
+export async function PUT(request: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get("id");
+
+  if (!userId) {
+    return NextResponse.json({ error: "Failed to find customer id" }, { status: 400 });
+  }
+
+  try {
+    // Receber os dados do corpo da requisição
+    const customerData = await request.json();
+    const { name, phone, email, address, responsavel } = customerData;
+
+    console.log(`RECEBIDO O ID: ${userId}`);
+    console.log(`DADOS DO CLIENTE:`, customerData);
+
+    // Atualizando o cliente no banco de dados com base no ID
+    const updatedCustomer = await prismaClient.customer.update({
+      where: { id: userId }, // Garantir que o cliente correto será atualizado
+      data: {
+        name,
+        phone,
+        email,
+        address: address || "", // Se não houver endereço, usa uma string vazia
+        responsavel: responsavel || "", // Se não houver responsável, usa uma string vazia
+      },
+    });
+
+    return NextResponse.json({ message: "Cliente atualizado com sucesso!" });
+    
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Failed to update customer" }, { status: 500 });
+  }
+}

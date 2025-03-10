@@ -28,7 +28,7 @@ export function TicketCusto({custos}: {custos: CustosProps}){
   return(
     <>
       <tr className='border-b-2 border-b-slate-200 h-16 last:border-b-0
-      bg-slate-100 hover:bg-gray-200 duration-300' >
+      bg-slate-100 hover:bg-gray-200 duration-300 text-base xl:text-base' >
         <td className="text-left pl-1">
           {custos.createdAt ? custos.createdAt.toLocaleDateString("pt-BR") : "Sem data"}
         </td>
