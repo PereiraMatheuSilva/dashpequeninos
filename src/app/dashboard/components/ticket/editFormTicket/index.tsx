@@ -59,7 +59,7 @@ export function EditCustomerForm({ customerToEdit, onClose }: EditCustomerFormPr
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<CustomerFormData>({
+    } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: defaultCustomerValues(customerToEdit),
   });
