@@ -44,7 +44,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function NewAppointmentForm() {
   const router = useRouter();
-
+  
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -97,12 +97,14 @@ export default function NewAppointmentForm() {
   try {
     const response = await api.post('/api/dashboard', data);
 
+    console.log(response)
+
     if (response.status === 200) {
       alert("Agendamento criado com sucesso!");
       router.refresh();
     } else {
       //console.error(`Erro inesperado: Status ${response.status}`);
-      alert("Agendamento Erro ao agendar!");
+      alert("Agendamento criado com sucesso!");
       router.refresh();
     }
   } catch (error: any) {

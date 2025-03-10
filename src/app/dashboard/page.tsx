@@ -71,6 +71,9 @@ export default async function Clientes() {
     date: agendamento.date.toISOString(),
   }));
 
+  console.log(agendamentos)
+  console.log(formattedAgendamentos)
+
   return (
     <div className="w-full xl:mt-2 px-4">
       <div className="w-full flex flex-col lg:flex-row lg:items-center xl:mb-10">
