@@ -11,15 +11,21 @@ import { useRouter } from 'next/navigation';
 import { CustomerProps } from '@/utils/customer.type';
 
 const schema = z.object({
-  name: z.string().min(1, "O Campo Nome é obrigatório."),
-  phone: z.string().refine((value) => {
-    return /^(?:\(\d{2}\)\s?)?\d{9}$/.test(value) || /^\d{2}\s\d{9}$/.test(value) || /^\d{11}$/.test(value);
-  }, {
-    message: "O numero de telefone deve estar (DD) 9XXXX-XXXX"
-  }),
-  email: z.string().email("Digite um E-mail valido").min(1, "O E-mail é obrigatório."),
-  address: z.string(),
-  responsavel: z.string(),
+  name: z.string().min(1, 'O Campo Nome é obrigatório.'),
+  phone: z
+    .string()
+    .refine(
+      (value) =>
+        /^(?:\(\d{2}\)\s?)?\d{9}$/.test(value) ||
+        /^\d{2}\s\d{9}$/.test(value) ||
+        /^\d{11}$/.test(value),
+      {
+        message: 'O número de telefone deve estar no formato (DD) 9XXXX-XXXX',
+      }
+    ),
+  email: z.string().email('Digite um E-mail válido').min(1, 'O E-mail é obrigatório.'),
+  address: z.string().optional(),
+  responsavel: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -29,32 +35,37 @@ interface EditCustomerFormProps {
   onClose: () => void;
 }
 
+interface CustomerFormData {
+  name: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  responsavel?: string;
+}
+
+const defaultCustomerValues = (customer: CustomerProps | null): CustomerFormData => ({
+  name: customer?.name ?? '',
+  phone: customer?.phone ?? '',
+  email: customer?.email ?? undefined,
+  address: customer?.address ?? undefined,
+  responsavel: customer?.responsavel ?? undefined,
+});
+
 export function EditCustomerForm({ customerToEdit, onClose }: EditCustomerFormProps) {
   const router = useRouter();
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<CustomerFormData>({
     resolver: zodResolver(schema),
-    defaultValues: customerToEdit
-      ? {
-          name: customerToEdit.name ?? "",
-          phone: customerToEdit.phone ?? "",
-          email: customerToEdit.email ?? "",
-          address: customerToEdit.address ?? "",
-          responsavel: customerToEdit.responsavel ?? "",
-        }
-      : undefined,
+    defaultValues: defaultCustomerValues(customerToEdit),
   });
 
   useEffect(() => {
-    if (customerToEdit) {
-      reset({
-        name: customerToEdit.name ?? "",
-        phone: customerToEdit.phone ?? "",
-        email: customerToEdit.email ?? "",
-        address: customerToEdit.address ?? "",
-        responsavel: customerToEdit.responsavel ?? "",
-      });
-    }
+    reset(defaultCustomerValues(customerToEdit));
   }, [customerToEdit, reset]);
 
   async function handleRegisterCustomer(data: FormData) {
@@ -86,25 +97,25 @@ export function EditCustomerForm({ customerToEdit, onClose }: EditCustomerFormPr
       <div className='flex flex-wrap gap-4'>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 ml-1 text-lg font-medium'>Nome</label>
-          <Input type='text' placeholder='Digite o nome Completo' error={errors.name?.message} register={register} />
+          <Input type='text' placeholder='Digite o nome Completo' error={errors.name?.message} register={register('name')} />
         </div>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Telefone</label>
-          <Input type='text' placeholder='Digite o Telefone (DD) 9XXXX-XXXX' error={errors.phone?.message} register={register} />
+          <Input type='text' placeholder='Digite o Telefone (DD) 9XXXX-XXXX' error={errors.phone?.message} register={register('phone')} />
         </div>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>E-mail</label>
-          <Input type='email' placeholder='Digite o E-mail' error={errors.email?.message} register={register} />
+          <Input type='email' placeholder='Digite o E-mail' error={errors.email?.message} register={register('email')} />
         </div>
       </div>
       <div className='flex flex-wrap gap-4 mt-3'>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Endereço</label>
-          <Input type='text' placeholder='Digite o Endereço' error={errors.address?.message} register={register} />
+          <Input type='text' placeholder='Digite o Endereço' error={errors.address?.message} register={register('address')} />
         </div>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Responsável</label>
-          <Input type='text' placeholder='Digite o nome do Responsável' error={errors.responsavel?.message} register={register}/>
+          <Input type='text' placeholder='Digite o nome do Responsável' error={errors.responsavel?.message} register={register('responsavel')} />
         </div>
       </div>
       <div className='flex flex-row gap-4 mt-6'>
