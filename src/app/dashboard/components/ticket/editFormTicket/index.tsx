@@ -97,25 +97,26 @@ export function EditCustomerForm({ customerToEdit, onClose }: EditCustomerFormPr
       <div className='flex flex-wrap gap-4'>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 ml-1 text-lg font-medium'>Nome</label>
-          <Input type='text' placeholder='Digite o nome Completo' error={errors.name?.message} register={register('name')} />
+          <Input type='text' placeholder='Digite o nome Completo' error={errors.name?.message} register={register} 
+          name='name'/>
         </div>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Telefone</label>
-          <Input type='text' placeholder='Digite o Telefone (DD) 9XXXX-XXXX' error={errors.phone?.message} register={register('phone')} />
+          <Input type='text' placeholder='Digite o Telefone (DD) 9XXXX-XXXX' error={errors.phone?.message} register={register} name='phone'/>
         </div>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>E-mail</label>
-          <Input type='email' placeholder='Digite o E-mail' error={errors.email?.message} register={register('email')} />
+          <Input type='email' placeholder='Digite o E-mail' error={errors.email?.message} register={register} name='email'/>
         </div>
       </div>
       <div className='flex flex-wrap gap-4 mt-3'>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Endereço</label>
-          <Input type='text' placeholder='Digite o Endereço' error={errors.address?.message} register={register('address')} />
+          <Input type='text' placeholder='Digite o Endereço' error={errors.address?.message} register={register} name='address' />
         </div>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Responsável</label>
-          <Input type='text' placeholder='Digite o nome do Responsável' error={errors.responsavel?.message} register={register('responsavel')} />
+          <Input type='text' placeholder='Digite o nome do Responsável' error={errors.responsavel?.message} register={register} name='responsavel' />
         </div>
       </div>
       <div className='flex flex-row gap-4 mt-6'>
