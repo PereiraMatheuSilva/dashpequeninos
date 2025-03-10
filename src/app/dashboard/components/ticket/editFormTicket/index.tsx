@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -35,11 +36,11 @@ export function EditCustomerForm({ customerToEdit, onClose }: EditCustomerFormPr
     resolver: zodResolver(schema),
     defaultValues: customerToEdit
       ? {
-          name: customerToEdit.name,
-          phone: customerToEdit.phone,
-          email: customerToEdit.email,
-          address: customerToEdit.address,
-          responsavel: customerToEdit.responsavel,
+          name: customerToEdit.name ?? "",
+          phone: customerToEdit.phone ?? "",
+          email: customerToEdit.email ?? "",
+          address: customerToEdit.address ?? "",
+          responsavel: customerToEdit.responsavel ?? "",
         }
       : undefined,
   });
@@ -47,11 +48,11 @@ export function EditCustomerForm({ customerToEdit, onClose }: EditCustomerFormPr
   useEffect(() => {
     if (customerToEdit) {
       reset({
-        name: customerToEdit.name,
-        phone: customerToEdit.phone,
-        email: customerToEdit.email,
-        address: customerToEdit.address,
-        responsavel: customerToEdit.responsavel,
+        name: customerToEdit.name ?? "",
+        phone: customerToEdit.phone ?? "",
+        email: customerToEdit.email ?? "",
+        address: customerToEdit.address ?? "",
+        responsavel: customerToEdit.responsavel ?? "",
       });
     }
   }, [customerToEdit, reset]);
@@ -60,14 +61,7 @@ export function EditCustomerForm({ customerToEdit, onClose }: EditCustomerFormPr
     if (!customerToEdit) return;
 
     try {
-      await api.put(`/api/customer?id=${customerToEdit.id}`, {
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        address: data.address,
-        responsavel: data.responsavel,
-      });
-
+      await api.put(`/api/customer?id=${customerToEdit.id}`, data);
       router.refresh();
       onClose();
     } catch (error) {
@@ -87,89 +81,35 @@ export function EditCustomerForm({ customerToEdit, onClose }: EditCustomerFormPr
     }
   }
 
-  async function handleEditeCustomer() {
-    if (!customerToEdit) return;
-
-    try {
-      await api.put(`/api/customer?id=${customerToEdit.id}` , customerToEdit);
-      router.refresh();
-      onClose();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-
-
   return (
     <form className='flex flex-col mb-2 p-4' onSubmit={handleSubmit(handleRegisterCustomer)}>
       <div className='flex flex-wrap gap-4'>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 ml-1 text-lg font-medium'>Nome</label>
-          <Input
-            type='text'
-            name='name'
-            placeholder='Digite o nome Completo'
-            error={errors.name?.message}
-            register={register}
-          />
+          <Input type='text' placeholder='Digite o nome Completo' error={errors.name?.message} register={register} />
         </div>
-
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Telefone</label>
-          <Input
-            type='text'
-            name='phone'
-            placeholder='Digite o Telefone (DD) 9XXXX-XXXX'
-            error={errors.phone?.message}
-            register={register}
-          />
+          <Input type='text' placeholder='Digite o Telefone (DD) 9XXXX-XXXX' error={errors.phone?.message} register={register} />
         </div>
-
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>E-mail</label>
-          <Input
-            type='email'
-            name='email'
-            placeholder='Digite o E-mail'
-            error={errors.email?.message}
-            register={register}
-          />
+          <Input type='email' placeholder='Digite o E-mail' error={errors.email?.message} register={register} />
         </div>
       </div>
       <div className='flex flex-wrap gap-4 mt-3'>
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Endereço</label>
-          <Input
-            type='text'
-            name='address'
-            placeholder='Digite o Endereço'
-            error={errors.address?.message}
-            register={register}
-          />
+          <Input type='text' placeholder='Digite o Endereço' error={errors.address?.message} register={register} />
         </div>
-
         <div className='flex-1 min-w-[250px]'>
           <label className='mb-1 text-lg font-medium'>Responsável</label>
-          <Input
-            type='text'
-            name='responsavel'
-            placeholder='Digite o nome do Responsável'
-            error={errors.responsavel?.message}
-            register={register}
-          />
+          <Input type='text' placeholder='Digite o nome do Responsável' error={errors.responsavel?.message} register={register}/>
         </div>
-        <div className='flex flex-row gap-4 mt-6'>
-          <Button className='w-1/2 h-[50px] bg-yellow-400 hover:bg-yellow-700 text-black'
-            onClick={handleEditeCustomer}
-          >Editar Dados</Button>
-          <Button
-            className='w-1/2 h-[50px] bg-red-400 hover:bg-red-700 text-white'
-            onClick={handleDeleteCustomer}
-          >
-            Excluir Cliente
-          </Button>
-        </div>
+      </div>
+      <div className='flex flex-row gap-4 mt-6'>
+        <Button type='submit' className='w-1/2 h-[50px] bg-yellow-400 hover:bg-yellow-700 text-black'>Salvar</Button>
+        <Button type='button' className='w-1/2 h-[50px] bg-red-400 hover:bg-red-700 text-white' onClick={handleDeleteCustomer}>Excluir Cliente</Button>
       </div>
     </form>
   );
