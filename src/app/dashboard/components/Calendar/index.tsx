@@ -5,35 +5,71 @@ import timeGridPlugin from "@fullcalendar/timegrid"; // Usa a grade de horário
 import ptBrLocale from "@fullcalendar/core/locales/pt-br"; // Português-BR
 import { api } from '@/lib/api'; // A API importada
 
-type Agendamento = {
+export interface CustomerProps {
   id: string;
-  date: string;
-  startTime: string;
-  endTime: string;
+  created_at: Date;
+  updated_at: Date;
+  name: string;
+  address: string | null;
+  phone: string;
+  email: string | null;
+  responsavel: string | null;
+}
+
+export interface ServiceProps {
+  id: string;
+  name: string;
   description: string | null;
   value: number;
-  status: string;
-  room: string;
-  customer: { name: string };
-  professional: { name: string };
-  service: { name: string };
-};
+  created_at: Date;
+  updated_at: Date;
+  duration: string | null;
+}
+
+export interface ProfessionalProps {
+  id: string;
+  name: string;
+  specialty: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface AgendamentoProps {
+  id: string;
+  date: Date;
+  time: string;
+  customer: CustomerProps;
+  service: ServiceProps | null;
+  professional: ProfessionalProps;
+  description?: string; // Se existir
+  status?: string; // Se existir
+  room?: string; // Se existir
+}
+
+
 
 type CalendarProps = {
-  agendamentos: Agendamento[];
+  agendamentos: AgendamentoProps[];
 };
 
 export default function Calendar({ agendamentos }: CalendarProps) {
   // Mapeando os agendamentos para o formato esperado pelo FullCalendar
-  const events = agendamentos.map(agendamento => ({
-    id: agendamento.id, // Adicionando o ID do agendamento
-    title: `${agendamento.customer.name} - ${agendamento.service.name}`,
-    start: new Date(agendamento.startTime),
-    end: new Date(agendamento.endTime),
-    description: agendamento.description,
-    status: agendamento.status,
-    room: agendamento.room,
-  }));
+  const events = agendamentos.map(agendamento => {
+  const startDateTime = new Date(`${agendamento.date}T${agendamento.time}`);
+  const endDateTime = new Date(startDateTime);
+  endDateTime.setMinutes(startDateTime.getMinutes() + 30); // Ajuste conforme a duração do serviço
+
+  return {
+    id: agendamento.id,
+    title: `${agendamento.customer.name} - ${agendamento.service ? agendamento.service.name : "Sem serviço"}`,
+    start: startDateTime,
+    end: endDateTime,
+    description: agendamento.description || "",
+    status: agendamento.status || "",
+    room: agendamento.room || "",
+  };
+});
+
 
   // Função chamada quando um evento é clicado
   const handleEventClick = async (info: any) => {
