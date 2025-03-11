@@ -35,12 +35,12 @@ export default async function Clientes() {
           <SheetContent className="w-full">
             <SheetHeader>
               <SheetTitle className='flex flex-col mb-2 font-bold text-3xl'>Novo Agendamento</SheetTitle>
-              <SheetDescription className='mb-2'>
+              <SheetDescription>
                 Preencha as informações para adicionar um novo agendamento.
               </SheetDescription>
             </SheetHeader >
 
-            <div className='flex flex-col mt-9 mb-2'>
+            <div className='flex flex-col mb-2'>
               <NewAppointmentForm />
             </div>
           </SheetContent>
