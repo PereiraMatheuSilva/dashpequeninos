@@ -39,12 +39,12 @@ export default async function Clientes() {
               <SheetContent side="bottom" className="w-full h-[50vh]">
                 <SheetHeader>
                   <SheetTitle className='flex flex-col mb-2 font-bold text-3xl'>Cadastrar novo cliente</SheetTitle>
-                  <SheetDescription className='mb-2'>
+                  <SheetDescription>
                     Preencha as informações para adicionar um novo cliente.
                   </SheetDescription>
                 </SheetHeader >
                 
-                <div className='flex flex-col mt-9 mb-2'>
+                <div className='flex flex-col mb-2'>
                   <NewCustomerForm />
                 </div>
 
