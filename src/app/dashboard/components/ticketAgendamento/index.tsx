@@ -42,9 +42,14 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+// Interface para as props do componente
+interface NewAppointmentFormProps {
+  onAppointmentCreated: () => Promise<void>;
+}
+
 export default function NewAppointmentForm() {
   const router = useRouter();
-  
+
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -58,7 +63,7 @@ export default function NewAppointmentForm() {
       customerId: '',
       serviceId: '',
       professionalId: '',
-    }
+    },
   });
 
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -93,35 +98,28 @@ export default function NewAppointmentForm() {
   }, [selectedServiceId, services, setValue]);
 
   const onSubmit = async (data: FormData) => {
-  setIsLoading(true);
-  try {
-    const response = await api.post('/api/dashboard', data);
+    setIsLoading(true);
+    try {
+      const response = await api.post('/api/dashboard', data);
 
-    console.log(response)
+      console.log(response);
 
-    if (response.status === 200) {
-      alert("Agendamento criado com sucesso!");
-      router.refresh();
-    } else {
-      //console.error(`Erro inesperado: Status ${response.status}`);
-      alert("Agendamento criado com sucesso!");
-      router.refresh();
+    } catch (error: any) {
+      console.error('Erro ao enviar os dados:', error);
+
+      if (error.response?.data?.error) {
+        alert(error.response.data.error);
+      } else {
+        alert('Erro ao processar o agendamento. Verifique os dados e tente novamente.');
+      }
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error: any) {
-    console.error('Erro ao enviar os dados:', error);
-
-    if (error.response?.data?.error) {
-      alert(error.response.data.error);
-    } else {
-      alert("Erro ao processar o agendamento. Verifique os dados e tente novamente.");
-    }
-  } finally {
-    setIsLoading(false);
-  }
   };
 
   return (
     <form className="w-full max-w-5xl mx-auto p-6 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      
       <div className="grid xl:grid-cols-2 gap-6">
         <select {...register('status')} className='w-full p-2 border rounded-md'>
           <option value='pendente'>Pendente</option>

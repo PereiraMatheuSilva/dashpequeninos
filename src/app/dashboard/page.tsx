@@ -5,31 +5,21 @@ import prismaClient from '@/lib/prisma';
 import Calendar from './components/Calendar';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import NewAppointmentForm from '@/app/dashboard/components/ticketAgendamento';
-import { Appointment, Customer, Professional, Services } from '@prisma/client';
-
-type AppointmentWithRelations = Appointment & {
-  customer: Customer;
-  professional: Professional;
-  service?: Services | null; // O serviço pode ser opcional
-};
-
 
 export default async function Clientes() {
-  
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user) {
     redirect("/");
   }
 
-  const agendamentos: AppointmentWithRelations[] = await prismaClient.  appointment.findMany({
+  const agendamentos = await prismaClient.appointment.findMany({
     include: {
-      customer: true,
-      professional: true,
-      service: true,
-    },
+      customer: true,      // Incluir os dados do cliente
+      professional: true,  // Incluir os dados do profissional
+      service: true        // Incluir os dados do serviço
+    }
   });
-
 
   console.log(agendamentos);
 
