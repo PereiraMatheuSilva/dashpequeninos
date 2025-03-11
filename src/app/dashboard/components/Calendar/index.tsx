@@ -47,28 +47,7 @@ export interface AgendamentoProps {
 }
 
 
-
-type CalendarProps = {
-  agendamentos: AgendamentoProps[];
-};
-
-export default function Calendar({ agendamentos }: CalendarProps) {
-  // Mapeando os agendamentos para o formato esperado pelo FullCalendar
-  const events = agendamentos.map(agendamento => {
-  const startDateTime = new Date(`${agendamento.date}T${agendamento.time}`);
-  const endDateTime = new Date(startDateTime);
-  endDateTime.setMinutes(startDateTime.getMinutes() + 30); // Ajuste conforme a duração do serviço
-
-  return {
-    id: agendamento.id,
-    title: `${agendamento.customer.name} - ${agendamento.service ? agendamento.service.name : "Sem serviço"}`,
-    start: startDateTime,
-    end: endDateTime,
-    description: agendamento.description || "",
-    status: agendamento.status || "",
-    room: agendamento.room || "",
-  };
-});
+export default function Calendar() {
 
 
   // Função chamada quando um evento é clicado
@@ -118,8 +97,7 @@ export default function Calendar({ agendamentos }: CalendarProps) {
             hour: "2-digit",
             minute: "2-digit",
             hour12: false,
-          }} // Exibe os horários como "08:00", "09:00", etc.
-          events={events} // Passa os agendamentos como eventos
+          }} // Exibe os horários como "08:00", "09:00", etc. // Passa os agendamentos como eventos
           eventClick={handleEventClick} // Define o callback para o clique
           headerToolbar={{
             start: "prev,next today", // Botões à esquerda

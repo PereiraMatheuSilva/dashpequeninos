@@ -48,7 +48,7 @@ export default async function Clientes() {
       </div>
 
       {/* Passando os agendamentos para o Calendar */}
-      <Calendar agendamentos={agendamentos} />
+      <Calendar  />
     </div>    
   );
 }
