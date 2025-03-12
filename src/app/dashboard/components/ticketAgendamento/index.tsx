@@ -101,15 +101,17 @@ export default function NewAppointmentForm() {
     setIsLoading(true);
     try {
       const response = await api.post('/api/dashboard', data);
-
-      console.log(response);
+      router.refresh();
 
     } catch (error: any) {
+      router.refresh();
       console.error('Erro ao enviar os dados:', error);
 
       if (error.response?.data?.error) {
+        router.refresh();
         alert(error.response.data.error);
       } else {
+        router.refresh();
         alert('Erro ao processar o agendamento. Verifique os dados e tente novamente.');
       }
     } finally {

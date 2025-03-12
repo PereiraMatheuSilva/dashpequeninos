@@ -4,8 +4,23 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid"; // Usa a grade de horário
 import ptBrLocale from "@fullcalendar/core/locales/pt-br"; // Português-BR
 import { api } from '@/lib/api'; // A API importada
-import { Appointment, Customer, Professional, Services } from '@prisma/client';
+import { Customer, Professional, Services } from '@prisma/client';
 
+type Appointment = {
+    id: string;
+    date: Date;
+    startTime: Date | String;
+    endTime: Date | String;
+    description: string | null;
+    value: number;
+    status: string;
+    room: string | null;
+    customerId: string;
+    serviceId: string | null;
+    professionalId: string;
+    created_at: Date | null;
+    updated_at: Date | null;
+}
 
 type AppointmentWithRelations = Appointment & {
   customer: Customer;
@@ -21,37 +36,37 @@ export default function Calendar({ agendamentos }: CalendarProps) {
 
   // Função chamada quando um evento é clicado
   const handleEventClick = async (info: any) => {
-  const id = info.event.id; // ID do evento clicado
+    const id = info.event.id; // ID do evento clicado
 
-  const confirmed = window.confirm('Você tem certeza que deseja excluir o agendamento?');
+    const confirmed = window.confirm('Você tem certeza que deseja excluir o agendamento?');
 
-  if (confirmed) {
-    try {
-      const response = await api.delete(`/api/dashboard?id=${id}`); // Passando o ID como query parameter
+    if (confirmed) {
+      try {
+        const response = await api.delete(`/api/dashboard?id=${id}`); // Passando o ID como query parameter
 
-      if (response.status === 200) {
-        alert('Agendamento excluído com sucesso.');
-        info.event.remove();
-      } else if (response.status === 401) {
-        alert('Não autorizado a excluir o agendamento.');
-      } else if (response.status === 400) {
-        alert('ID do agendamento não fornecido.');
-      } else {
-        alert('Erro ao excluir o agendamento.');
+        if (response.status === 200) {
+          alert('Agendamento excluído com sucesso.');
+          info.event.remove();
+        } else if (response.status === 401) {
+          alert('Não autorizado a excluir o agendamento.');
+        } else if (response.status === 400) {
+          alert('ID do agendamento não fornecido.');
+        } else {
+          alert('Erro ao excluir o agendamento.');
+        }
+      } catch (error) {
+        console.error('Erro ao excluir agendamento:', error);
+        alert('Erro ao excluir agendamento.');
       }
-    } catch (error) {
-      console.error('Erro ao excluir agendamento:', error);
-      alert('Erro ao excluir agendamento.');
     }
-  }
   };
 
   // Transformando os agendamentos em eventos do FullCalendar
   const eventos = agendamentos.map((agendamento) => ({
     id: agendamento.id,
     title: `${agendamento.customer.name} - ${agendamento.service?.name || "Serviço"}`,
-    start: agendamento.startTime, // Hora de início
-    end: agendamento.endTime, // Hora de término
+    start: String(agendamento.startTime), // Hora de início
+    end: String(agendamento.endTime), // Hora de término
     description: agendamento.description || "Sem descrição",
     extendedProps: {
       status: agendamento.status,
@@ -59,8 +74,6 @@ export default function Calendar({ agendamentos }: CalendarProps) {
       room: agendamento.room,
     },
   }));
-
-  console.log(eventos)
 
   return (
     <div className="flex h-[calc(100vh-80px)] px-8">
@@ -82,6 +95,11 @@ export default function Calendar({ agendamentos }: CalendarProps) {
             start: "prev,next today",
             center: "title",
             end: "timeGridDay,timeGridWeek",
+          }}
+          slotLabelFormat={{
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false, // Para garantir que a hora será exibida no formato 24 horas
           }}
         />
       </div>
