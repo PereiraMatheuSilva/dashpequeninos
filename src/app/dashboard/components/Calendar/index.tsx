@@ -9,8 +9,8 @@ import { Customer, Professional, Services } from '@prisma/client';
 type Appointment = {
     id: string;
     date: Date;
-    startTime: string ;
-    endTime: string ;
+    startTime: Date ;
+    endTime: Date ;
     description: string | null;
     value: number;
     status: string;
@@ -65,13 +65,13 @@ export default function Calendar({ agendamentos }: CalendarProps) {
   const eventos = agendamentos.map((agendamento) => ({
     id: agendamento.id,
     title: `${agendamento.customer.name} - ${agendamento.service?.name || "Serviço"}`,
-    start: agendamento.startTime, // Hora de início
-    end: agendamento.endTime, // Hora de término
+    start: agendamento.startTime.toISOString(), // Convertendo para string
+    end: agendamento.endTime.toISOString(),     // Convertendo para string
     description: agendamento.description || "Sem descrição",
     extendedProps: {
-      status: agendamento.status,
-      professional: agendamento.professional.name,
-      room: agendamento.room,
+        status: agendamento.status,
+        professional: agendamento.professional.name,
+        room: agendamento.room,
     },
   }));
 
