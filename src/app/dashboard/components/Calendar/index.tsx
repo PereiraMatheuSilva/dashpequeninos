@@ -9,6 +9,8 @@ import { Customer, Professional, Services } from '@prisma/client';
 type Appointment = {
     id: string;
     date: Date;
+    startTime: Date ;
+    endTime: Date ;
     description: string | null;
     value: number;
     status: string;

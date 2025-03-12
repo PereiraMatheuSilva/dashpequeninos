@@ -42,11 +42,6 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-// Interface para as props do componente
-interface NewAppointmentFormProps {
-  onAppointmentCreated: () => Promise<void>;
-}
-
 export default function NewAppointmentForm() {
   const router = useRouter();
 
@@ -78,11 +73,20 @@ export default function NewAppointmentForm() {
       setServices(response.data.services || []);
       setCustomers(response.data.customers || []);
       router.refresh();
+    
+      // Supondo que o agendamento é feito em algum lugar aqui, se o agendamento  for bem-sucedido, mostre o toast de sucesso
+      toast.success('Agendamento realizado com sucesso!');
+    
     } catch (error) {
+      router.refresh();
       console.error('Erro ao buscar dados do dashboard:', error);
       toast.error('Erro ao carregar os dados.');
+    
+      // Caso o erro seja no agendamento, adicione o toast de erro
+      toast.error('Falha ao realizar o agendamento. Tente novamente.');
     }
   }
+
 
   useEffect(() => {
     handleGetDashboard();
@@ -101,8 +105,7 @@ export default function NewAppointmentForm() {
     setIsLoading(true);
     try {
       const response = await api.post('/api/dashboard', data);
-
-      console.log(response);
+      router.refresh();
 
     } catch (error: any) {
       console.error('Erro ao enviar os dados:', error);
