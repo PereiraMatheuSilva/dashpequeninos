@@ -9,8 +9,8 @@ import { Customer, Professional, Services } from '@prisma/client';
 type Appointment = {
     id: string;
     date: Date;
-    startTime: Date ;
-    endTime: Date ;
+    startTime: string ;
+    endTime: string ;
     description: string | null;
     value: number;
     status: string;
@@ -75,7 +75,6 @@ export default function Calendar({ agendamentos }: CalendarProps) {
     },
   }));
 
-  console.log(eventos)
 
   return (
     <div className="flex h-[calc(100vh-80px)] px-8">

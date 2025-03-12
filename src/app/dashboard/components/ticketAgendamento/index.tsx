@@ -102,6 +102,7 @@ export default function NewAppointmentForm() {
   }, [selectedServiceId, services, setValue]);
 
   const onSubmit = async (data: FormData) => {
+    console.log('Dados enviados:', data);
     setIsLoading(true);
     try {
       const response = await api.post('/api/dashboard', data);
