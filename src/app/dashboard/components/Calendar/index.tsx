@@ -75,6 +75,8 @@ export default function Calendar({ agendamentos }: CalendarProps) {
     },
   }));
 
+  console.log(eventos)
+
   return (
     <div className="flex h-[calc(100vh-80px)] px-8">
       <div className="2xl:w-64"></div>
@@ -99,7 +101,6 @@ export default function Calendar({ agendamentos }: CalendarProps) {
           slotLabelFormat={{
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false, // Para garantir que a hora será exibida no formato 24 horas
           }}
         />
       </div>
