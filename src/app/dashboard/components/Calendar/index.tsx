@@ -9,8 +9,6 @@ import { Customer, Professional, Services } from '@prisma/client';
 type Appointment = {
     id: string;
     date: Date;
-    startTime: Date | String;
-    endTime: Date | String;
     description: string | null;
     value: number;
     status: string;
@@ -65,8 +63,8 @@ export default function Calendar({ agendamentos }: CalendarProps) {
   const eventos = agendamentos.map((agendamento) => ({
     id: agendamento.id,
     title: `${agendamento.customer.name} - ${agendamento.service?.name || "Serviço"}`,
-    start: String(agendamento.startTime), // Hora de início
-    end: String(agendamento.endTime), // Hora de término
+    start: agendamento.startTime, // Hora de início
+    end: agendamento.endTime, // Hora de término
     description: agendamento.description || "Sem descrição",
     extendedProps: {
       status: agendamento.status,
@@ -101,6 +99,7 @@ export default function Calendar({ agendamentos }: CalendarProps) {
           slotLabelFormat={{
             hour: '2-digit',
             minute: '2-digit',
+            hour12: false, // Para garantir que a hora será exibida no formato 24 horas
           }}
         />
       </div>

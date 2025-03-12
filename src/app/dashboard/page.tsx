@@ -21,22 +21,6 @@ export default async function Clientes() {
         }
     });
 
-    // Ajuste manual das horas (UTC-3)
-    const agendamentosAjustados = agendamentos.map(agendamento => {
-        const startTime = new Date(agendamento.startTime);
-        const endTime = new Date(agendamento.endTime);
-
-        // Ajuste para o fuso horário do Brasil (UTC-3)
-        const brasilTimeStart = new Date(startTime.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-        const brasilTimeEnd = new Date(endTime.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-
-        return {
-            ...agendamento,
-            startTime: brasilTimeStart.toISOString(),
-            endTime: brasilTimeEnd.toISOString()
-        };
-    });
-
     return (
         <div className="w-full">
             <div className='w-full flex items-center mb-20'>
@@ -62,7 +46,7 @@ export default async function Clientes() {
             </div>
 
             {/* Passando os agendamentos ajustados para o Calendar */}
-            <Calendar agendamentos={agendamentosAjustados} />
+            <Calendar agendamentos={agendamentos} />
         </div>
     );
 }
