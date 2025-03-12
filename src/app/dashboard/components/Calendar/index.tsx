@@ -90,6 +90,7 @@ export default function Calendar({ agendamentos }: CalendarProps) {
           locale={ptBrLocale}
           nowIndicator={true}
           allDaySlot={false}
+          timeZone="UTC" 
           events={eventos}
           eventClick={handleEventClick}
           headerToolbar={{

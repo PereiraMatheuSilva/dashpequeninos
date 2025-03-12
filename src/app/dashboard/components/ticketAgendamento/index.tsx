@@ -106,6 +106,8 @@ export default function NewAppointmentForm() {
     setIsLoading(true);
     try {
       const response = await api.post('/api/dashboard', data);
+
+
       router.refresh();
 
     } catch (error: any) {
