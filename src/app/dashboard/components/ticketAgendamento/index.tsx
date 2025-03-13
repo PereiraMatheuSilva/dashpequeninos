@@ -126,7 +126,7 @@ export default function NewAppointmentForm() {
   return (
     <form className="w-full max-w-5xl mx-auto p-6 space-y-6" onSubmit={handleSubmit(onSubmit)}>
       
-      <div className="grid xl:grid-cols-2 gap-6">
+      <div className="grid xl:grid-cols-1 gap-6">
         <select {...register('status')} className='w-full p-2 border rounded-md'>
           <option value='pendente'>Pendente</option>
           <option value='confirmado'>Confirmado</option>

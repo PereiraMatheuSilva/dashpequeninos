@@ -107,3 +107,31 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Failed to update customer" }, { status: 500 });
   }
 }
+
+export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const customerId = searchParams.get("customerId");
+
+  if (!customerId) {
+    return NextResponse.json({ error: "Failed to find customer id" }, { status: 400 });
+  }
+
+
+  try {
+    const response = await prismaClient.customer.findMany({
+      where:{
+        id: customerId
+      }
+    })
+
+    return NextResponse.json({ customerId:  response})
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to find customer id" }, { status: 400 });    
+  }
+}
