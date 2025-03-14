@@ -117,7 +117,7 @@ export default function EditAppointmentForm({
   
   return (
     <form
-      className="w-full max-w-5xl mx-auto p-6 space-y-6"
+      className="w-full max-w-5xl mx-auto p-6 space-y-1.5"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="grid xl:grid-cols-2 gap-6">
