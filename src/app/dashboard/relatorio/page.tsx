@@ -1,145 +1,79 @@
 'use client'
 
-import * as React from "react"
+import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ChartOverView from '@/components/chart';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle
-} from '@/components/ui/card';
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { DollarSign, DollarSignIcon, Percent, Calendar as CalendarIcon } from 'lucide-react';
-import { format, addDays } from "date-fns"
-import { DateRange } from "react-day-picker"
-import { ptBR } from "date-fns/locale"  // Adicionando suporte ao português
 import { api } from '@/lib/api';
-import { useState, useEffect } from 'react';
-
-export function DatePickerWithRange({
-  date,
-  setDate
-}: {
-  date: DateRange | undefined;
-  setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
-}) {
-  const hoje = new Date();
-
-  // Sempre inicia com a data de hoje para ambos os campos
-  useEffect(() => {
-    if (!date) {
-      setDate({ from: hoje, to: hoje });
-    }
-  }, [date, setDate]);
-
-  return (
-    <div className="grid gap-2">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant="outline"
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                `${format(date.from, "dd 'de' LLLL 'de' yyyy", { locale: ptBR })} - ${format(date.to, "dd 'de' LLLL 'de' yyyy", { locale: ptBR })}`
-              ) : (
-                format(date.from, "dd 'de' LLLL 'de' yyyy", { locale: ptBR })
-              )
-            ) : (
-              <span>Selecione uma data</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            locale={ptBR}
-            initialFocus
-            mode="range"
-            defaultMonth={hoje}
-            selected={date}
-            onSelect={(range) => setDate(range || { from: hoje, to: hoje })}
-            numberOfMonths={2}
-          />
-          <div className="p-2">
-            <Button
-              variant="ghost"
-              className="w-full"
-              onClick={() => setDate({ from: hoje, to: hoje })}
-            >
-              Resetar para hoje
-            </Button>
-          </div>
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-}
 
 
-export default function Relatorio() {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 20),
-  });
-
-  const [totalAtendimentos, setTotalAtendimentos] = useState<number | null>(null);
-  const [custosTotais, setCustosTotais] = useState<number | null>(null);
+export default function DashboardPage() {
+  const [date, setDate] = useState<DateRange | undefined>();
   const [receitaTotal, setReceitaTotal] = useState<number | null>(null);
+  const [custosTotais, setCustosTotais] = useState<number | null>(null);
+  const [totalAtendimentos, setTotalAtendimentos] = useState<number | null>(null);
+  const [lucroTotal, setLucroTotal] = useState<number | null>(null);
+  const [ticketMedio, setTicketMedio] = useState<number | null>(null);
+  const [mediaDiaria, setMediaDiaria] = useState<number | null>(null);
+  const [horarioPico, setHorarioPico] = useState<number | null>(null); 
+
+  const [profissional, setProfissional] = useState('');
+
+  const [dataInicial, setDataInicial] = useState<string>("");
+  const [dataFinal, setDataFinal] = useState<string>("");
 
   async function fetchAtendimentos(startDate?: Date, endDate?: Date) {
-    if (!startDate || !endDate) return;
+  if (!startDate || !endDate) return;
 
-    try {
-      const total_atendimento = await api.get("/api/dashboard/total-atendimentos", {
-        params: {
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-        },
-      });
+  try {
+    const { data: total_atendimento } = await api.get("/api/dashboard/total-atendimentos", {
+      params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
+
+    const { data: custos } = await api.get('/api/dashboard/custos-totais', {
+      params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
+
+    const { data: receita } = await api.get('/api/dashboard/receita-total', {
+      params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
+
+    const { data: lucro } = await api.get('/api/dashboard/lucro-total', {
+      params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
+
+    const { data: ticket } = await api.get('/api/dashboard/ticket-medio', {
+      params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
+
+    const { data: mediadiaria } = await api.get('/api/dashboard/media-diaria', {
+      params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
+
+    const { data: hsPico } = await api.get('/api/dashboard/horario-pico', {
+      params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
+
+    const { data: doctorActive } = await api.get('/api/dashboard/profissional-mais-ativo', {
+      params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
 
 
-      const custos = await api.get('/api/dashboard/custos-totais', {
-        params: {
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-        },       
-      })
+    console.log(profissional)
 
-      const receita = await api.get('/api/dashboard/receita-total', {
-        params: {
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-        },       
-      })
-
-
-
-
-      console.log(`Custos Totais`, custos)
-      console.log(`Receita Totais`, receita)
-      console.log(`Total Atendimentos`, total_atendimento)
-
-      setReceitaTotal(receita.data.receitaTotal)
-      setCustosTotais(custos.data.custosTotais)
-      setTotalAtendimentos(total_atendimento.data.totalAtendimentos);
-    } catch (error) {
-      console.error("Erro ao buscar atendimentos:", error);
-    }
+    setHorarioPico(hsPico.horarioPico);
+    setReceitaTotal(receita.receitaTotal);
+    setCustosTotais(custos.custosTotais);
+    setTotalAtendimentos(total_atendimento.totalAtendimentos);
+    setLucroTotal(lucro.lucroTotal);
+    setTicketMedio(ticket.ticketMedio);
+    setMediaDiaria(mediadiaria.mediaDiaria);
+    setProfissional(doctorActive.profissional);
+  } catch (error) {
+    console.error("Erro ao buscar atendimentos:", error);
   }
+  }
+
 
   useEffect(() => {
     if (date?.from && date?.to) {
@@ -147,147 +81,117 @@ export default function Relatorio() {
     }
   }, [date]);
 
+  const handleSubmit = () => {
+    if (!dataInicial || !dataFinal) {
+      alert("Selecione as datas!");
+      return;
+    }
+    fetchAtendimentos(new Date(dataInicial), new Date(dataFinal));
+  };
 
   return (
-    <main className='p-4'>
-      <section className='grid-cols-1 mb-2'>
-        <DatePickerWithRange date={date} setDate={setDate} />
-
-      </section>
-
-      <section className='grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2'>
+    <div className="p-4">
+      <div className="flex gap-4 mb-4">
+        <input
+          type="date"
+          value={dataInicial}
+          onChange={(e) => setDataInicial(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <input
+          type="date"
+          value={dataFinal}
+          onChange={(e) => setDataFinal(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <button onClick={handleSubmit} className="bg-blue-500 text-white p-2 rounded">
+          Enviar Datas
+        </button>
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <div className='flex items-center justify-center'>
-              <CardTitle className='text-lg sm:text-xl text-gray-600 select-none'>
-                Lucro Total
-              </CardTitle>
-              <DollarSign className='ml-auto w-4 h-4' />
-            </div>
-            <CardDescription>
-              Lucro em 30 dias
-            </CardDescription>
+            <CardTitle>Custos Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-base sm:text-lg font-bold'>R$ {custosTotais}</p>
+            <p className="text-base sm:text-lg font-bold">R$ {(receitaTotal ?? 0) - (custosTotais ?? 0)}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <div className='flex items-center justify-center'>
-              <CardTitle className='text-lg sm:text-xl text-gray-600 select-none'>
-                Custos Totais
-              </CardTitle>
-              <DollarSign className='ml-auto w-4 h-4' />
-            </div>
-            <CardDescription>
-              Total de Custos em 30 dias
-            </CardDescription>
+            <CardTitle>Receita Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-base sm:text-lg font-bold'>R$ {custosTotais}</p>
+            <p className="text-base sm:text-lg font-bold">R$ {receitaTotal ?? 0}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <div className='flex items-center justify-center'>
-              <CardTitle className='text-lg sm:text-xl text-gray-600 select-none'>
-                Total de Receita
-              </CardTitle>
-              <DollarSignIcon className='ml-auto w-4 h-4' />
-            </div>
-            <CardDescription>
-              Total de receitas em 30 dias
-            </CardDescription>
+            <CardTitle>Total de Atendimentos</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-base sm:text-lg font-bold'>
-              R$ {receitaTotal}
-            </p>
+            <p className="text-base sm:text-lg font-bold">{totalAtendimentos ?? 0}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <div className='flex items-center justify-center'>
-              <CardTitle className='text-lg sm:text-xl text-gray-600 select-none'>
-                Atendimentos Hoje
-              </CardTitle>
-              <Percent className='ml-auto w-4 h-4' />
-            </div>
-            <CardDescription>
-              Total de Atendimentos Hoje
-            </CardDescription>
+            <CardTitle>Lucro Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-base sm:text-lg font-bold'>{totalAtendimentos}</p>
-          </CardContent>
-        </Card>
-
-      </section>
-
-      <section className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
-        <Card>
-          <CardHeader>
-            <div className='flex items-center justify-center'>
-              <CardTitle className='text-lg sm:text-xl text-gray-600 select-none'>
-                Ticket Medio
-              </CardTitle>
-              <DollarSignIcon className='ml-auto w-4 h-4' />
-            </div>
-            <CardDescription>
-              Ticket Medio em 30 dias
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className='text-base sm:text-lg font-bold'>
-              R$ {receitaTotal}
-            </p>
+            <p className="text-base sm:text-lg font-bold">R$ {lucroTotal ?? 0}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <div className='flex items-center justify-center'>
-              <CardTitle className='text-lg sm:text-xl text-gray-600 select-none'>
-                Média Diária
-              </CardTitle>
-              <Percent className='ml-auto w-4 h-4' />
-            </div>
-            <CardDescription>
-              Média Diária
-            </CardDescription>
+            <CardTitle>Ticket Médio</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-base sm:text-lg font-bold'>{totalAtendimentos}</p>
+            <p className="text-base sm:text-lg font-bold">{ticketMedio ?? 0}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <div className='flex items-center justify-center'>
-              <CardTitle className='text-lg sm:text-xl text-gray-600 select-none'>
-                Atendimentos Hoje
-              </CardTitle>
-              <Percent className='ml-auto w-4 h-4' />
-            </div>
-            <CardDescription>
-              Total de Atendimentos Hoje
-            </CardDescription>
+            <CardTitle>Média Diária</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-base sm:text-lg font-bold'>0</p>
+            <p className="text-base sm:text-lg font-bold">{mediaDiaria ?? 0}</p>
           </CardContent>
         </Card>
-      </section>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>Horário Pico</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-base sm:text-lg font-bold">{horarioPico ?? 0}</p>
+          </CardContent>
+        </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>Profissional Mais Ativo</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-base sm:text-lg font-bold">{ticketMedio ?? 0}</p>
+          </CardContent>
+        </Card>
 
-      <section className='mt-4 flex flex-col md:flex-row gap-4'>
-        <ChartOverView />
-      </section>
-    </main>
+        <Card>
+          <CardHeader>
+            <CardTitle>Receita por profissional</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-base sm:text-lg font-bold">{profissional ?? 0}</p>
+          </CardContent>
+        </Card>
+      </div>
+     
+    </div>
   );
 }
