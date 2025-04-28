@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import moment from 'moment';
 
 const prisma = new PrismaClient();
+const timeDifferenceHours = 3; // Diferença de 3 horas
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -21,11 +22,12 @@ export async function GET(request: Request) {
 
     const horarios: { [key: string]: number } = {};
     appointments.forEach((appointment) => {
-      const hora = moment(appointment.startTime).format('HH:00');
-      if (!horarios[hora]) {
-        horarios[hora] = 0;
+      // Adiciona 3 horas ao startTime antes de formatar
+      const horaLocal = moment(appointment.startTime).add(timeDifferenceHours, 'hours').format('HH:00');
+      if (!horarios[horaLocal]) {
+        horarios[horaLocal] = 0;
       }
-      horarios[hora]++;
+      horarios[horaLocal]++;
     });
 
     let horarioPico = '';
@@ -38,7 +40,7 @@ export async function GET(request: Request) {
       }
     }
 
-    return NextResponse.json({ horarioPico, maxAtendimentos }, { status: 200 });
+    return NextResponse.json({ horarioPico, maxAtendimentos, appointments}, { status: 200 });
   } catch (error) {
     console.error('Erro ao calcular horário de pico:', error);
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });

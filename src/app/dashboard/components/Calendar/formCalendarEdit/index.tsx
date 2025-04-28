@@ -82,6 +82,8 @@ export default function EditAppointmentForm({
     setTimeout(() => setIsLoading(false), 2000); // Simulação de envio
   };
 
+
+
   const handleDeleteAppointment = async () => {
     if (!agendamento) return;
 
@@ -147,32 +149,31 @@ export default function EditAppointmentForm({
         />
       </div>
 
-      <select {...register("serviceId")} className="w-full p-2 border rounded-md" disabled>
-        {services?.map((service) => (
-          <option key={service.id} value={service.id}>
-            {service.name}
-          </option>
-        ))}
-      </select>
+      <input
+        type="text"
+        {...register("customerId")}
+        className="w-full p-2 border rounded-md"
+        disabled
+        value={professionals?.map((professional) => professional.name).join(', ')}
+      />
 
-      <select
+      <input
+        type="text"
+        {...register("serviceId")}
+        className="w-full p-2 border rounded-md"
+        disabled
+        value={professionals?.map((professional) => professional.name).join(', ')}
+      />
+      
+      <input
+        type="text"
         {...register("professionalId")}
-        className="w-full p-2 border rounded-md" disabled
-      >
-        {professionals?.map((professional) => (
-          <option key={professional.id} value={professional.id}>
-            {professional.name}
-          </option>
-        ))}
-      </select>
+        className="w-full p-2 border rounded-md"
+        disabled
+        value={professionals?.map((professional) => professional.name).join(', ')}
+      />
 
-      <select {...register("customerId")} className="w-full p-2 border rounded-md" disabled>
-        {customers?.map((customer) => (
-          <option key={customer.id} value={customer.id}>
-            {customer.name}
-          </option>
-        ))}
-      </select>
+
 
       <div className="flex flex-row gap-4 mt-6">
         <Button type="submit" className="w-1/2 h-[50px] bg-yellow-400 hover:bg-yellow-700 text-black">Confirmar Agendamento</Button>
