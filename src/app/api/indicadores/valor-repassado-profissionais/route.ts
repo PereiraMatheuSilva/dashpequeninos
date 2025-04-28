@@ -33,7 +33,7 @@ async function calcularValorTotalRepassado(startDate: Date, endDate: Date, profe
 
     const valorTotalRepassado = appointments.reduce((sum, appointment) => {
       const valorRepassado = parseFloat(appointment.value.toString()) * 0.80;
-      return sum + valorRepassado;
+      return sum + (isNaN(valorRepassado) ? 0 : valorRepassado);
     }, 0);
 
     return valorTotalRepassado;
@@ -47,22 +47,28 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const startDateString = searchParams.get('startDate');
   const endDateString = searchParams.get('endDate');
-  const professionalId = searchParams.get('professionalId'); // Opcional
+  const professionalId = searchParams.get('professionalId') || undefined; // <- Corrigido aqui
 
   if (!startDateString || !endDateString) {
-    return NextResponse.json({ message: 'As datas de início (startDate) e fim (endDate) são obrigatórias na query.' }, { status: 400 });
+    return NextResponse.json(
+      { message: 'As datas de início (startDate) e fim (endDate) são obrigatórias na query.' },
+      { status: 400 }
+    );
   }
 
   try {
-    const startDate = new Date(startDateString as string);
-    const endDate = new Date(endDateString as string);
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
 
     const valorTotal = await calcularValorTotalRepassado(startDate, endDate, professionalId);
 
     return NextResponse.json({ valorTotalRepassadoProfissionais: valorTotal.toFixed(2) });
   } catch (error: any) {
     console.error('Erro ao buscar o valor total repassado aos profissionais:', error);
-    return NextResponse.json({ error: error.message || 'Erro ao buscar o valor total repassado aos profissionais' }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || 'Erro ao buscar o valor total repassado aos profissionais' },
+      { status: 500 }
+    );
   } finally {
     await prisma.$disconnect();
   }
