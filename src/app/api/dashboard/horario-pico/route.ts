@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import moment from 'moment';
 
 const prisma = new PrismaClient();
-const timeDifferenceHours = 3; // Diferença de 3 horas
+const timeDifferenceHours = 0; // Diferença de 3 horas
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
