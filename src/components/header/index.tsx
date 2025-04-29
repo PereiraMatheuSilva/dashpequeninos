@@ -7,7 +7,6 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 
 export function Header(){
   const { status, data } = useSession();
-  console.log(status)
 
   
   async function handleLogin(){

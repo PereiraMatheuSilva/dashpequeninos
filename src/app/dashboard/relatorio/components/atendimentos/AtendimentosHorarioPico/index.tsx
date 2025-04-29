@@ -65,7 +65,6 @@ export function AtendimentosHorarioPico(){
       setHorarioPico(resHorarioPico.data.horarioPico)
 
       setHorarioPicoDetails(resHorarioPico.data.appointments)
-      console.log('horario de pico',horarioPicoDetails)
     
     } catch (err) {
       console.error('Erro ao buscar atendimentos:', err);      

@@ -28,7 +28,7 @@ export function AtendimentosPorEspecialidade() {
       formattedData[item.especialidade] = item.count;
     });
     setChartDataFormatted(formattedData);
-    // console.log('Dados formatados para o gráfico:', formattedData); // Para verificar a estrutura
+
   }, [atendimentosPorEspecialidade]);
 
   const handleBuscar = async () => {

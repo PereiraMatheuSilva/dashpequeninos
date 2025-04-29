@@ -6,11 +6,9 @@ import { BarChart, LineChart } from '../../charts';
 import { Button } from "@/components/ui/button"
 import { ButtonLoading } from '@/components/buttonLoading';
 import { api } from '@/lib/api';
-import { FinanceiroData } from '@/utils/financeiro.type';
-import { Component } from './Grafico';
 
 
-export function FinanceiroPorProfissional(){
+export function AtendimentosTotal(){
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [totalAtendimentos, setTotalAtendimentos] = useState<string>('') 
@@ -18,7 +16,9 @@ export function FinanceiroPorProfissional(){
   const [diasUteis, setDiasUteis] = useState<string>('') 
   const [loading, setLoading] = useState(false);
   const [atendimentosPorDia, setAtendimentosPorDia] = useState<{ [key: string]: number } | null>(null);
-  const [financeiro, setFinanceiro] = useState<FinanceiroData>()
+  const [totalAtendimentosMes, SetTotalAtendimentosMes] = useState<string>('');
+  const [totalReceitaMes, SetTotalReceitaMes] = useState<string>('');
+  const [totalDiaUtilMes, SetTotalDiaUtilMes] = useState<string>('');
 
 
 
@@ -31,7 +31,7 @@ export function FinanceiroPorProfissional(){
     setLoading(true);
 
     try {
-      const [resAtendimentos, resReceita, resFinanceiro] = await Promise.all([
+      const [resAtendimentos, resReceita, resAtendimentosMes] = await Promise.all([
         api.get('/api/dashboard/total-atendimentos', {
           params: {
             startDate: startDate.toISOString(),
@@ -44,12 +44,7 @@ export function FinanceiroPorProfissional(){
             endDate: endDate.toISOString(),
           },
         }),
-        api.get('/api/financeiro', {
-          params: {
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString(),
-          }
-        }),
+        api.get('/api/dashboard/atendimentos-do-mes', {}),
       ]);
 
 
@@ -57,7 +52,11 @@ export function FinanceiroPorProfissional(){
       setTotalAtendimentos(resAtendimentos.data.AtendimentoTotal);
       setDiasUteis(resAtendimentos.data.diasUteis);
       setReceitaBruta(resReceita.data.receitaTotal);
-      setFinanceiro(resFinanceiro.data)
+      setAtendimentosPorDia(resAtendimentosMes.data.atendimentosPorDia);
+
+      SetTotalAtendimentosMes(resAtendimentosMes.data.totalAtendimentos)
+      SetTotalReceitaMes(resAtendimentosMes.data.totalReceita)
+      SetTotalDiaUtilMes(resAtendimentosMes.data.diasUteis)
 
     
     } catch (err) {
@@ -71,7 +70,7 @@ export function FinanceiroPorProfissional(){
       <div className="w-full min-h-screen space-y-6">
           {/* Navegação */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between   gap-4">
-            <h1 className="text-2xl font-bold">Receita por Profissional (B)</h1>
+            <h1 className="text-2xl font-bold">Atendimento Total</h1>
             <DateRangePicker 
               onChange={(start, end) => {
                 setStartDate(start)
@@ -84,27 +83,44 @@ export function FinanceiroPorProfissional(){
               <Button onClick={handleBuscar}>Buscar</Button>
             )}
           </div>
-
+          <h2 className="text-lg font-semibold mb-2">Atendimentos por Dia</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-            <TotalsCard title="Receita Total." value={
-              financeiro?.receitaBrutaTotal ? `R$ ${financeiro?.receitaBrutaTotal.toFixed(1)}` : '0,00'
+            <TotalsCard title="Dias Atend." value={
+              diasUteis ? diasUteis : '0'
             } icon="calendar" />
-
-            <TotalsCard title="Lucro Liquido Clinica" value={
-              financeiro?.lucroLiquidoClinica ? `R$ ${financeiro?.lucroLiquidoClinica.toFixed(1)}` : '0,00'
-            } icon="dollar-sign" />
 
             <TotalsCard title="Total Atendimentos" value={
               totalAtendimentos ? totalAtendimentos : '0'
             } icon="dollar-sign" />
 
+            <TotalsCard title="Receita Bruta" value={
+              receitaBruta ? `R$ ${receitaBruta}` : '0,00'
+            } icon="dollar-sign" />
+
           </div>
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+            <div className="bg-white rounded-2xl shadow p-4">
+              <h2 className="text-lg font-semibold mb-2">Atendimentos por Mês</h2>
+              {atendimentosPorDia && <BarChart chartData={atendimentosPorDia} />} {/* Passa os dados    como prop */}
+            </div>
 
-          {financeiro?.receitaBrutaPorProfissional && (
-            <Component data={financeiro.receitaBrutaPorProfissional} />
-          )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
+            <TotalsCard title="Dias Atend. Mês" value={
+              totalDiaUtilMes ? totalDiaUtilMes : '0'
+            } icon="calendar" />
+
+            <TotalsCard title="Total Atendimentos Mês" value={
+              totalAtendimentosMes ? totalAtendimentosMes : '0'
+            } icon="dollar-sign" />
+
+            <TotalsCard title="Receita Bruta Mês" value={
+              totalReceitaMes ? `R$ ${totalReceitaMes}` : '0,00'
+            } icon="dollar-sign" />
+
+          </div>
+          </div>
           
       </div>
     

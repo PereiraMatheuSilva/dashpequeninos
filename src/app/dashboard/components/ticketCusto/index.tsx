@@ -14,8 +14,6 @@ export function TicketCusto({custos}: {custos: CustosProps}){
           id: custos.id
         }
       })
-
-      console.log(response.data);
       
     } catch (error) {
       console.log(error)

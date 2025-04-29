@@ -28,7 +28,7 @@ export function AtendimentosPorProfissional() {
       formattedData[item.profissional] = item.count;
     });
     setChartDataFormatted(formattedData);
-    // console.log('Dados formatados para o gráfico (profissional):', formattedData);
+
   }, [atendimentosPorProfissional]);
 
   const handleBuscar = async () => {
@@ -48,7 +48,6 @@ export function AtendimentosPorProfissional() {
       });
 
       setAtendimentosPorProfissional(resProfissionais.data); // <---- ATUALIZE O NOME DO ESTADO
-      console.log(resProfissionais.data)
 
     } catch (err) {
       console.error('Erro ao buscar dados por profissional:', err);

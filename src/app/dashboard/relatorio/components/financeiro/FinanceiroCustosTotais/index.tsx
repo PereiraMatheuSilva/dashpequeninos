@@ -41,10 +41,7 @@ export function FinanceiroCustosTotais(){
           },
         }),
       ]);
-      
-      console.log(resFinanceiro.data)
-      
-    
+         
     
     } catch (err) {
       console.error('Erro ao buscar atendimentos:', err);      

@@ -78,7 +78,6 @@ export default function EditAppointmentForm({
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
-    console.log("Dados editados:", data);
     setTimeout(() => setIsLoading(false), 2000); // Simulação de envio
   };
 

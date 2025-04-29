@@ -57,7 +57,6 @@ export function FinanceiroTicketMedioLiquido(){
       setDiasUteis(resAtendimentos.data.diasUteis);
       setReceitaBruta(resReceita.data.receitaTotal);
       setFinanceiro(resFinanceiro.data)
-      console.log(resFinanceiro.data)
 
     
     } catch (err) {
