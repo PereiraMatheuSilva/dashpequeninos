@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '@/components/input/';
-import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
-import { useRouter } from 'next/navigation';
-import { FiLoader } from 'react-icons/fi';
-import { toast } from 'react-toastify';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/input/";
+import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { FiLoader } from "react-icons/fi";
+import { toast } from "react-toastify";
 
+// Tipos
 interface Customer {
   id: string;
   name: string;
@@ -27,17 +28,20 @@ interface Professional {
   name: string;
 }
 
+// Schema de validação
 const schema = z.object({
-  date: z.string().min(1, 'A data é obrigatória.'),
-  startTime: z.string().min(1, 'O horário de início é obrigatório.'),
-  endTime: z.string().min(1, 'O horário de término é obrigatório.'),
+  date: z.string().min(1, "A data é obrigatória."),
+  startTime: z.string().min(1, "O horário de início é obrigatório."),
+  endTime: z.string().min(1, "O horário de término é obrigatório."),
   description: z.string().optional(),
-  value: z.coerce.number().min(0, 'O valor deve ser positivo.'),
-  status: z.enum(['confirmado', 'pendente'], { message: 'Selecione um status válido.' }),
+  value: z.coerce.number().min(0, "O valor deve ser positivo."),
+  status: z.enum(["confirmado", "pendente"], {
+    message: "Selecione um status válido.",
+  }),
   room: z.string().optional(),
-  customerId: z.string().min(1, 'O cliente é obrigatório.'),
+  customerId: z.string().min(1, "O cliente é obrigatório."),
   serviceId: z.string().optional(),
-  professionalId: z.string().min(1, 'O profissional é obrigatório.'),
+  professionalId: z.string().min(1, "O profissional é obrigatório."),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -45,19 +49,25 @@ type FormData = z.infer<typeof schema>;
 export default function NewAppointmentForm() {
   const router = useRouter();
 
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      date: '',
-      startTime: '',
-      endTime: '',
-      description: '',
+      date: "",
+      startTime: "",
+      endTime: "",
+      description: "",
       value: 0,
-      status: 'pendente',
-      room: '',
-      customerId: '',
-      serviceId: '',
-      professionalId: '',
+      status: "pendente",
+      room: "",
+      customerId: "",
+      serviceId: "",
+      professionalId: "",
     },
   });
 
@@ -68,55 +78,48 @@ export default function NewAppointmentForm() {
 
   async function handleGetDashboard() {
     try {
-      const response = await api.get('/api/dashboard');
+      const response = await api.get("/api/dashboard");
       setProfessionals(response.data.professionals || []);
       setServices(response.data.services || []);
       setCustomers(response.data.customers || []);
       router.refresh();
-    
-      // Supondo que o agendamento é feito em algum lugar aqui, se o agendamento  for bem-sucedido, mostre o toast de sucesso
-      toast.success('Agendamento realizado com sucesso!');
-    
+      toast.success("Agendamento realizado com sucesso!");
     } catch (error) {
       router.refresh();
-      console.error('Erro ao buscar dados do dashboard:', error);
-      toast.error('Erro ao carregar os dados.');
-    
-      // Caso o erro seja no agendamento, adicione o toast de erro
-      toast.error('Falha ao realizar o agendamento. Tente novamente.');
+      console.error("Erro ao buscar dados do dashboard:", error);
+      toast.error("Erro ao carregar os dados.");
+      toast.error("Falha ao realizar o agendamento. Tente novamente.");
     }
   }
-
 
   useEffect(() => {
     handleGetDashboard();
   }, []);
 
-  const selectedServiceId = watch('serviceId');
+  const selectedServiceId = watch("serviceId");
 
   useEffect(() => {
     if (selectedServiceId) {
-      const selectedService = services.find(service => service.id === selectedServiceId);
-      setValue('value', selectedService ? selectedService.value : 0);
+      const selectedService = services.find(
+        (service) => service.id === selectedServiceId
+      );
+      setValue("value", selectedService ? selectedService.value : 0);
     }
   }, [selectedServiceId, services, setValue]);
 
   const onSubmit = async (data: FormData) => {
-
     setIsLoading(true);
     try {
-      const response = await api.post('/api/dashboard', data);
-
-
+      const response = await api.post("/api/dashboard", data);
       router.refresh();
-
     } catch (error: any) {
-      console.error('Erro ao enviar os dados:', error);
-
+      console.error("Erro ao enviar os dados:", error);
       if (error.response?.data?.error) {
         alert(error.response.data.error);
       } else {
-        alert('Erro ao processar o agendamento. Verifique os dados e tente novamente.');
+        alert(
+          "Erro ao processar o agendamento. Verifique os dados e tente novamente."
+        );
       }
     } finally {
       setIsLoading(false);
@@ -124,52 +127,101 @@ export default function NewAppointmentForm() {
   };
 
   return (
-    <form className="w-full max-w-5xl mx-auto p-6 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-      
+    <form
+      className="w-full max-w-5xl mx-auto p-6 space-y-6"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="grid xl:grid-cols-2 gap-6">
-        <select {...register('room')} className="w-full p-2 border rounded-md">
+        <select {...register("room")} className="w-full p-2 border rounded-md">
           <option value="">Selecione uma sala</option>
           <option value="sala 1">Sala 1</option>
           <option value="sala 2">Sala 2</option>
           <option value="sala 3">Sala 3</option>
         </select>
 
-        <select {...register('status')} className='w-full p-2 border rounded-md'>
-          <option value='pendente'>Pendente</option>
-          <option value='confirmado'>Confirmado</option>
+        <select
+          {...register("status")}
+          className="w-full p-2 border rounded-md"
+        >
+          <option value="pendente">Pendente</option>
+          <option value="confirmado">Confirmado</option>
         </select>
       </div>
 
-      <Input type="date" name="date" placeholder="Data" error={errors.date?.message} register={register} />
-      
+      <Input
+        type="date"
+        name="date"
+        placeholder="Data"
+        error={errors.date?.message}
+        register={register}
+      />
+
       <div className="grid xl:grid-cols-2 gap-6">
-        <Input type="time" name="startTime" placeholder="Hora de Início" error={errors.startTime?.message} register={register} />
-        <Input type="time" name="endTime" placeholder="Hora de Término" error={errors.endTime?.message} register={register} />
+        <Input
+          type="time"
+          name="startTime"
+          placeholder="Hora de Início"
+          error={errors.startTime?.message}
+          register={register}
+        />
+        <Input
+          type="time"
+          name="endTime"
+          placeholder="Hora de Término"
+          error={errors.endTime?.message}
+          register={register}
+        />
       </div>
 
-      <select {...register('serviceId')} className="w-full p-2 border rounded-md">
+      <select
+        {...register("serviceId")}
+        className="w-full p-2 border rounded-md"
+      >
         <option value="">Selecione um serviço</option>
-        {services.map(service => (
-          <option key={service.id} value={service.id}>{service.name} - R$ {Number(service.value).toFixed(2)}</option>
+        {services.map((service) => (
+          <option key={service.id} value={service.id}>
+            {service.name} - R$ {Number(service.value).toFixed(2)}
+          </option>
         ))}
       </select>
 
-      <select {...register('professionalId')} className="w-full p-2 border rounded-md">
+      <select
+        {...register("professionalId")}
+        className="w-full p-2 border rounded-md"
+      >
         <option value="">Selecione um profissional</option>
-        {professionals.map(professional => (
-          <option key={professional.id} value={professional.id}>{professional.name}</option>
+        {professionals.map((professional) => (
+          <option key={professional.id} value={professional.id}>
+            {professional.name}
+          </option>
         ))}
       </select>
 
-      <select {...register('customerId')} className="w-full p-2 border rounded-md">
+      <select
+        {...register("customerId")}
+        className="w-full p-2 border rounded-md"
+      >
         <option value="">Selecione um Cliente</option>
-        {customers.map(customer => (
-          <option key={customer.id} value={customer.id}>{customer.name}</option>
+        {customers.map((customer) => (
+          <option key={customer.id} value={customer.id}>
+            {customer.name}
+          </option>
         ))}
       </select>
 
-      <Button type="submit" className="w-full h-[50px] mt-6 bg-green-800 hover:bg-green-700 flex items-center justify-center gap-2" disabled={isLoading}>
-        {isLoading ? (<><FiLoader className="animate-spin text-white" size={20} />Processando...</>) : "Agendar Horário"}
+      <Button
+        type="submit"
+        className="w-full h-[50px] mt-6 bg-green-800 hover:bg-green-700 flex items-center justify-center gap-2"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <FiLoader className="animate-spin text-white" size={20} />
+            Processando...
+          </>
+        ) : (
+          "Agendar Horário"
+        )}
       </Button>
     </form>
   );
